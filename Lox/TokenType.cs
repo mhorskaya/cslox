@@ -3,7 +3,7 @@
 namespace Lox
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    internal enum TokenType
+    public enum TokenType
     {
         // Single-character tokens.
         LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,

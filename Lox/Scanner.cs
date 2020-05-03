@@ -3,7 +3,7 @@ using static Lox.TokenType;
 
 namespace Lox
 {
-    internal class Scanner
+    public class Scanner
     {
         private readonly string _source;
         private readonly List<Token> _tokens = new List<Token>();

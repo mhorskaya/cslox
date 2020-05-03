@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Lox
 {
-    internal class Lox
+    public class Lox
     {
         private static bool _hadError;
 

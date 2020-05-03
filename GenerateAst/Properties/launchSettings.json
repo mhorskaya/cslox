@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GenerateAst": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Git\\cslox\\Lox"
+    }
+  }
+}
