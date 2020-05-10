@@ -2,7 +2,7 @@
   "profiles": {
     "Lox": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\Hakan\\Desktop\\script.lox"
+      "commandLineArgs": "\"C:\\Users\\Hakan\\Desktop\\Crafting Interpreters\\script.lox\""
     }
   }
 }
