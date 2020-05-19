@@ -2,11 +2,26 @@
 
 namespace Lox
 {
-    public class AstPrinter : Expr.IVisitor<string>
+    public class AstPrinter : Expr.IVisitor<string>, Stmt.IVisitor<string>
     {
         public string Print(Expr expr)
         {
             return expr.Accept(this);
+        }
+
+        public string Print(Stmt stmt)
+        {
+            return stmt.Accept(this);
+        }
+
+        public string VisitExpressionStmt(Stmt.ExpressionStmt stmt)
+        {
+            return Parenthesize(";", stmt.Expression);
+        }
+
+        public string VisitPrintStmt(Stmt.PrintStmt stmt)
+        {
+            return Parenthesize("print", stmt.Expression);
         }
 
         public string VisitBinaryExpr(Expr.BinaryExpr expr)

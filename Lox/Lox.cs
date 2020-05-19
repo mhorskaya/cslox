@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Lox
@@ -90,6 +91,14 @@ namespace Lox
         {
             Console.Error.WriteLine($"[Line {line}] Error{where}: {message}");
             _hadError = true;
+        }
+
+        private static void PrintAst(List<Stmt> statements)
+        {
+            var printer = new AstPrinter();
+
+            foreach (var statement in statements)
+                Console.WriteLine(printer.Print(statement));
         }
     }
 }

@@ -4,11 +4,11 @@ namespace Lox
 {
     public abstract class Stmt
     {
-        public interface IVisitor
+        public interface IVisitor<T>
         {
-            void VisitExpressionStmt(ExpressionStmt stmt);
+            T VisitExpressionStmt(ExpressionStmt stmt);
 
-            void VisitPrintStmt(PrintStmt stmt);
+            T VisitPrintStmt(PrintStmt stmt);
         }
 
         public class ExpressionStmt : Stmt
@@ -18,9 +18,9 @@ namespace Lox
                 Expression = expression;
             }
 
-            public override void Accept(IVisitor visitor)
+            public override T Accept<T>(IVisitor<T> visitor)
             {
-                visitor.VisitExpressionStmt(this);
+               return visitor.VisitExpressionStmt(this);
             }
 
             public Expr Expression { get; }
@@ -33,14 +33,14 @@ namespace Lox
                 Expression = expression;
             }
 
-            public override void Accept(IVisitor visitor)
+            public override T Accept<T>(IVisitor<T> visitor)
             {
-                visitor.VisitPrintStmt(this);
+               return visitor.VisitPrintStmt(this);
             }
 
             public Expr Expression { get; }
         }
 
-        public abstract void Accept(IVisitor visitor);
+        public abstract T Accept<T>(IVisitor<T> visitor);
     }
 }

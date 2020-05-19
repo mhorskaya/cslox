@@ -5,7 +5,7 @@ using static Lox.TokenType;
 
 namespace Lox
 {
-    public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor
+    public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
         public void Interpret(List<Stmt> statements)
         {
@@ -50,15 +50,17 @@ namespace Lox
             }
         }
 
-        public void VisitExpressionStmt(Stmt.ExpressionStmt stmt)
+        public object VisitExpressionStmt(Stmt.ExpressionStmt stmt)
         {
             Evaluate(stmt.Expression);
+            return null;
         }
 
-        public void VisitPrintStmt(Stmt.PrintStmt stmt)
+        public object VisitPrintStmt(Stmt.PrintStmt stmt)
         {
             var value = Evaluate(stmt.Expression);
             Console.WriteLine(Stringify(value));
+            return null;
         }
 
         public object VisitBinaryExpr(Expr.BinaryExpr expr)
