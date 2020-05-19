@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using static Lox.TokenType;
 
 namespace Lox
 {
-    public class Interpreter : Expr.IVisitor<object>
+    public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor
     {
-        public void Interpret(Expr expression)
+        public void Interpret(List<Stmt> statements)
         {
             try
             {
-                var value = Evaluate(expression);
-                Console.WriteLine(Stringify(value));
+                foreach (var statement in statements)
+                {
+                    Execute(statement);
+                }
             }
             catch (RuntimeError error)
             {
@@ -22,6 +25,11 @@ namespace Lox
         private object Evaluate(Expr expr)
         {
             return expr.Accept(this);
+        }
+
+        private void Execute(Stmt stmt)
+        {
+            stmt.Accept(this);
         }
 
         private static string Stringify(object obj)
@@ -40,6 +48,17 @@ namespace Lox
                 default:
                     return obj.ToString();
             }
+        }
+
+        public void VisitExpressionStmt(Stmt.ExpressionStmt stmt)
+        {
+            Evaluate(stmt.Expression);
+        }
+
+        public void VisitPrintStmt(Stmt.PrintStmt stmt)
+        {
+            var value = Evaluate(stmt.Expression);
+            Console.WriteLine(Stringify(value));
         }
 
         public object VisitBinaryExpr(Expr.BinaryExpr expr)
