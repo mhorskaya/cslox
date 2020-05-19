@@ -17,10 +17,10 @@ namespace GenerateAst
             var outputDir = args[0];
             DefineAst(outputDir, "Expr", new List<string>
             {
-                "Binary   : Expr left, Token @operator, Expr right",
-                "Grouping : Expr expression",
-                "Literal  : object value",
-                "Unary    : Token @operator, Expr right"
+                "BinaryExpr   : Expr left, Token @operator, Expr right",
+                "GroupingExpr : Expr expression",
+                "LiteralExpr  : object value",
+                "UnaryExpr    : Token @operator, Expr right"
             });
         }
 
@@ -68,7 +68,7 @@ namespace GenerateAst
             {
                 var type = types[i];
                 var typeName = type.Split(":")[0].Trim();
-                writer.WriteLine($"            T Visit{typeName}{baseName}({typeName} {baseName.ToLower()});");
+                writer.WriteLine($"            T Visit{typeName}({typeName} {baseName.ToLower()});");
                 if (i < types.Count - 1)
                 {
                     writer.WriteLine();
@@ -96,7 +96,7 @@ namespace GenerateAst
 
             writer.WriteLine("            public override T Accept<T>(IVisitor<T> visitor)");
             writer.WriteLine("            {");
-            writer.WriteLine($"               return visitor.Visit{className}{baseName}(this);");
+            writer.WriteLine($"               return visitor.Visit{className}(this);");
             writer.WriteLine("            }");
             writer.WriteLine();
 

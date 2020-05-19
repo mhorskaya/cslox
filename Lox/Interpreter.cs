@@ -42,7 +42,7 @@ namespace Lox
             }
         }
 
-        public object VisitBinaryExpr(Expr.Binary expr)
+        public object VisitBinaryExpr(Expr.BinaryExpr expr)
         {
             var left = Evaluate(expr.Left);
             var right = Evaluate(expr.Right);
@@ -96,17 +96,17 @@ namespace Lox
             return null;
         }
 
-        public object VisitGroupingExpr(Expr.Grouping expr)
+        public object VisitGroupingExpr(Expr.GroupingExpr expr)
         {
             return Evaluate(expr.Expression);
         }
 
-        public object VisitLiteralExpr(Expr.Literal expr)
+        public object VisitLiteralExpr(Expr.LiteralExpr expr)
         {
             return expr.Value;
         }
 
-        public object VisitUnaryExpr(Expr.Unary expr)
+        public object VisitUnaryExpr(Expr.UnaryExpr expr)
         {
             var right = Evaluate(expr.Right);
 

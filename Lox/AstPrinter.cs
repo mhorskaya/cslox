@@ -9,22 +9,22 @@ namespace Lox
             return expr.Accept(this);
         }
 
-        public string VisitBinaryExpr(Expr.Binary expr)
+        public string VisitBinaryExpr(Expr.BinaryExpr expr)
         {
             return Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);
         }
 
-        public string VisitGroupingExpr(Expr.Grouping expr)
+        public string VisitGroupingExpr(Expr.GroupingExpr expr)
         {
             return Parenthesize("group", expr.Expression);
         }
 
-        public string VisitLiteralExpr(Expr.Literal expr)
+        public string VisitLiteralExpr(Expr.LiteralExpr expr)
         {
             return expr.Value == null ? "nil" : expr.Value.ToString();
         }
 
-        public string VisitUnaryExpr(Expr.Unary expr)
+        public string VisitUnaryExpr(Expr.UnaryExpr expr)
         {
             return Parenthesize(expr.Operator.Lexeme, expr.Right);
         }

@@ -41,7 +41,7 @@ namespace Lox
             {
                 var @operator = Previous();
                 var right = Comparison();
-                expr = new Expr.Binary(expr, @operator, right);
+                expr = new Expr.BinaryExpr(expr, @operator, right);
             }
 
             return expr;
@@ -55,7 +55,7 @@ namespace Lox
             {
                 var @operator = Previous();
                 var right = Addition();
-                expr = new Expr.Binary(expr, @operator, right);
+                expr = new Expr.BinaryExpr(expr, @operator, right);
             }
 
             return expr;
@@ -69,7 +69,7 @@ namespace Lox
             {
                 var @operator = Previous();
                 var right = Multiplication();
-                expr = new Expr.Binary(expr, @operator, right);
+                expr = new Expr.BinaryExpr(expr, @operator, right);
             }
 
             return expr;
@@ -83,7 +83,7 @@ namespace Lox
             {
                 var @operator = Previous();
                 var right = Unary();
-                expr = new Expr.Binary(expr, @operator, right);
+                expr = new Expr.BinaryExpr(expr, @operator, right);
             }
 
             return expr;
@@ -95,7 +95,7 @@ namespace Lox
             {
                 var @operator = Previous();
                 var right = Unary();
-                return new Expr.Unary(@operator, right);
+                return new Expr.UnaryExpr(@operator, right);
             }
 
             return Primary();
@@ -103,20 +103,20 @@ namespace Lox
 
         private Expr Primary()
         {
-            if (Match(FALSE)) return new Expr.Literal(false);
-            if (Match(TRUE)) return new Expr.Literal(true);
-            if (Match(NIL)) return new Expr.Literal(null);
+            if (Match(FALSE)) return new Expr.LiteralExpr(false);
+            if (Match(TRUE)) return new Expr.LiteralExpr(true);
+            if (Match(NIL)) return new Expr.LiteralExpr(null);
 
             if (Match(NUMBER, STRING))
             {
-                return new Expr.Literal(Previous().Literal);
+                return new Expr.LiteralExpr(Previous().Literal);
             }
 
             if (Match(LEFT_PAREN))
             {
                 var expr = Expression();
                 Consume(RIGHT_PAREN, "Expect ')' after expression.");
-                return new Expr.Grouping(expr);
+                return new Expr.GroupingExpr(expr);
             }
 
             throw Error(Peek(), "Expect expression.");

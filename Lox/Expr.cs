@@ -6,18 +6,18 @@ namespace Lox
     {
         public interface IVisitor<T>
         {
-            T VisitBinaryExpr(Binary expr);
+            T VisitBinaryExpr(BinaryExpr expr);
 
-            T VisitGroupingExpr(Grouping expr);
+            T VisitGroupingExpr(GroupingExpr expr);
 
-            T VisitLiteralExpr(Literal expr);
+            T VisitLiteralExpr(LiteralExpr expr);
 
-            T VisitUnaryExpr(Unary expr);
+            T VisitUnaryExpr(UnaryExpr expr);
         }
 
-        public class Binary : Expr
+        public class BinaryExpr : Expr
         {
-            public Binary(Expr left, Token @operator, Expr right)
+            public BinaryExpr(Expr left, Token @operator, Expr right)
             {
                 Left = left;
                 Operator = @operator;
@@ -34,9 +34,9 @@ namespace Lox
             public Expr Right { get; }
         }
 
-        public class Grouping : Expr
+        public class GroupingExpr : Expr
         {
-            public Grouping(Expr expression)
+            public GroupingExpr(Expr expression)
             {
                 Expression = expression;
             }
@@ -49,9 +49,9 @@ namespace Lox
             public Expr Expression { get; }
         }
 
-        public class Literal : Expr
+        public class LiteralExpr : Expr
         {
-            public Literal(object value)
+            public LiteralExpr(object value)
             {
                 Value = value;
             }
@@ -64,9 +64,9 @@ namespace Lox
             public object Value { get; }
         }
 
-        public class Unary : Expr
+        public class UnaryExpr : Expr
         {
-            public Unary(Token @operator, Expr right)
+            public UnaryExpr(Token @operator, Expr right)
             {
                 Operator = @operator;
                 Right = right;
