@@ -13,6 +13,8 @@ namespace Lox
             T VisitLiteralExpr(LiteralExpr expr);
 
             T VisitUnaryExpr(UnaryExpr expr);
+
+            T VisitVariableExpr(VariableExpr expr);
         }
 
         public class BinaryExpr : Expr
@@ -79,6 +81,21 @@ namespace Lox
 
             public Token Operator { get; }
             public Expr Right { get; }
+        }
+
+        public class VariableExpr : Expr
+        {
+            public VariableExpr(Token name)
+            {
+                Name = name;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitVariableExpr(this);
+            }
+
+            public Token Name { get; }
         }
 
         public abstract T Accept<T>(IVisitor<T> visitor);

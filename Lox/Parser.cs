@@ -21,7 +21,7 @@ namespace Lox
             var statements = new List<Stmt>();
             while (!IsAtEnd())
             {
-                statements.Add(Statement());
+                statements.Add(Declaration());
             }
 
             return statements;
@@ -30,6 +30,21 @@ namespace Lox
         private Expr Expression()
         {
             return Equality();
+        }
+
+        private Stmt Declaration()
+        {
+            try
+            {
+                if (Match(VAR)) return VarDeclaration();
+
+                return Statement();
+            }
+            catch (ParseError)
+            {
+                Synchronize();
+                return null;
+            }
         }
 
         private Stmt Statement()
@@ -44,6 +59,20 @@ namespace Lox
             var value = Expression();
             Consume(SEMICOLON, "Expect ';' after value.");
             return new Stmt.PrintStmt(value);
+        }
+
+        private Stmt VarDeclaration()
+        {
+            var name = Consume(IDENTIFIER, "Expect variable name.");
+
+            Expr initializer = null;
+            if (Match(EQUAL))
+            {
+                initializer = Expression();
+            }
+
+            Consume(SEMICOLON, "Expect ';' after variable declaration.");
+            return new Stmt.VarStmt(name, initializer);
         }
 
         private Stmt ExpressionStatement()
@@ -130,6 +159,11 @@ namespace Lox
             if (Match(NUMBER, STRING))
             {
                 return new Expr.LiteralExpr(Previous().Literal);
+            }
+
+            if (Match(IDENTIFIER))
+            {
+                return new Expr.VariableExpr(Previous());
             }
 
             if (Match(LEFT_PAREN))

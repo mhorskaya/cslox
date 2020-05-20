@@ -7,6 +7,8 @@ namespace Lox
 {
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
+        private readonly Environment _environment = new Environment();
+
         public void Interpret(List<Stmt> statements)
         {
             try
@@ -60,6 +62,18 @@ namespace Lox
         {
             var value = Evaluate(stmt.Expression);
             Console.WriteLine(Stringify(value));
+            return null;
+        }
+
+        public object VisitVarStmt(Stmt.VarStmt stmt)
+        {
+            object value = null;
+            if (stmt.Initializer != null)
+            {
+                value = Evaluate(stmt.Initializer);
+            }
+
+            _environment.Define(stmt.Name.Lexeme, value);
             return null;
         }
 
@@ -143,6 +157,11 @@ namespace Lox
 
             // Unreachable.
             return null;
+        }
+
+        public object VisitVariableExpr(Expr.VariableExpr expr)
+        {
+            return _environment.Get(expr.Name);
         }
 
         private static void CheckNumberOperand(Token @operator, object operand)

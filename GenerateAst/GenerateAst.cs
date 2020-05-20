@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace GenerateAst
@@ -20,13 +21,15 @@ namespace GenerateAst
                 "BinaryExpr   : Expr left, Token @operator, Expr right",
                 "GroupingExpr : Expr expression",
                 "LiteralExpr  : object value",
-                "UnaryExpr    : Token @operator, Expr right"
+                "UnaryExpr    : Token @operator, Expr right",
+                "VariableExpr : Token name"
             });
 
             DefineAst(outputDir, "Stmt", new List<string>
             {
                 "ExpressionStmt : Expr expression",
-                "PrintStmt      : Expr expression"
+                "PrintStmt      : Expr expression",
+                "VarStmt        : Token name, Expr initializer"
             });
         }
 
@@ -127,7 +130,7 @@ namespace GenerateAst
                 return "Operator";
             }
 
-            return char.ToUpper(word[0]) + word.Substring(1);
+            return char.ToUpper(word[0], CultureInfo.InvariantCulture) + word.Substring(1);
         }
     }
 }
