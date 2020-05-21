@@ -6,6 +6,8 @@ namespace Lox
     {
         public interface IVisitor<T>
         {
+            T VisitAssignExpr(AssignExpr expr);
+
             T VisitBinaryExpr(BinaryExpr expr);
 
             T VisitGroupingExpr(GroupingExpr expr);
@@ -15,6 +17,23 @@ namespace Lox
             T VisitUnaryExpr(UnaryExpr expr);
 
             T VisitVariableExpr(VariableExpr expr);
+        }
+
+        public class AssignExpr : Expr
+        {
+            public AssignExpr(Token name, Expr value)
+            {
+                Name = name;
+                Value = value;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitAssignExpr(this);
+            }
+
+            public Token Name { get; }
+            public Expr Value { get; }
         }
 
         public class BinaryExpr : Expr

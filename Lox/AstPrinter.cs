@@ -34,6 +34,11 @@ namespace Lox
             return Parenthesize2("var", stmt.Name, "=", stmt.Initializer);
         }
 
+        public string VisitAssignExpr(Expr.AssignExpr expr)
+        {
+            return Parenthesize2("=", expr.Name.Lexeme, expr.Value);
+        }
+
         public string VisitBinaryExpr(Expr.BinaryExpr expr)
         {
             return Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);

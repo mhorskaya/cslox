@@ -18,6 +18,7 @@ namespace GenerateAst
             var outputDir = args[0];
             DefineAst(outputDir, "Expr", new List<string>
             {
+                "AssignExpr   : Token name, Expr value",
                 "BinaryExpr   : Expr left, Token @operator, Expr right",
                 "GroupingExpr : Expr expression",
                 "LiteralExpr  : object value",

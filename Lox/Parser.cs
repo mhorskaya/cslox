@@ -29,7 +29,7 @@ namespace Lox
 
         private Expr Expression()
         {
-            return Equality();
+            return Assignment();
         }
 
         private Stmt Declaration()
@@ -80,6 +80,27 @@ namespace Lox
             var expr = Expression();
             Consume(SEMICOLON, "Expect ';' after expression.");
             return new Stmt.ExpressionStmt(expr);
+        }
+
+        private Expr Assignment()
+        {
+            var expr = Equality();
+
+            if (Match(EQUAL))
+            {
+                var equals = Previous();
+                var value = Assignment();
+
+                if (expr is Expr.VariableExpr variableExpr)
+                {
+                    var name = variableExpr.Name;
+                    return new Expr.AssignExpr(name, value);
+                }
+
+                Error(equals, "Invalid assignment target.");
+            }
+
+            return expr;
         }
 
         private Expr Equality()

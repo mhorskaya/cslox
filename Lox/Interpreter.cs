@@ -77,6 +77,14 @@ namespace Lox
             return null;
         }
 
+        public object VisitAssignExpr(Expr.AssignExpr expr)
+        {
+            var value = Evaluate(expr.Value);
+
+            _environment.Assign(expr.Name, value);
+            return value;
+        }
+
         public object VisitBinaryExpr(Expr.BinaryExpr expr)
         {
             var left = Evaluate(expr.Left);
