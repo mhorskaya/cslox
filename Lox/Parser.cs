@@ -51,6 +51,7 @@ namespace Lox
         {
             if (Match(IF)) return IfStatement();
             if (Match(PRINT)) return PrintStatement();
+            if (Match(WHILE)) return WhileStatement();
             if (Match(LEFT_BRACE)) return new Stmt.BlockStmt(Block());
 
             return ExpressionStatement();
@@ -77,6 +78,16 @@ namespace Lox
             var value = Expression();
             Consume(SEMICOLON, "Expect ';' after value.");
             return new Stmt.PrintStmt(value);
+        }
+
+        private Stmt WhileStatement()
+        {
+            Consume(LEFT_PAREN, "Expect '(' after 'while'.");
+            var condition = Expression();
+            Consume(RIGHT_PAREN, "Expect ')' after condition.");
+            var body = Statement();
+
+            return new Stmt.WhileStmt(condition, body);
         }
 
         private Stmt VarDeclaration()

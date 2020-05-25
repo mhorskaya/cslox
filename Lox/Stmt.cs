@@ -15,6 +15,8 @@ namespace Lox
             T VisitPrintStmt(PrintStmt stmt);
 
             T VisitVarStmt(VarStmt stmt);
+
+            T VisitWhileStmt(WhileStmt stmt);
         }
 
         public class BlockStmt : Stmt
@@ -96,6 +98,23 @@ namespace Lox
 
             public Token Name { get; }
             public Expr Initializer { get; }
+        }
+
+        public class WhileStmt : Stmt
+        {
+            public WhileStmt(Expr condition, Stmt body)
+            {
+                Condition = condition;
+                Body = body;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitWhileStmt(this);
+            }
+
+            public Expr Condition { get; }
+            public Stmt Body { get; }
         }
 
         public abstract T Accept<T>(IVisitor<T> visitor);

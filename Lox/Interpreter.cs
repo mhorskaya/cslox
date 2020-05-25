@@ -115,6 +115,15 @@ namespace Lox
             return null;
         }
 
+        public object VisitWhileStmt(Stmt.WhileStmt stmt)
+        {
+            while (IsTruthy(Evaluate(stmt.Condition)))
+            {
+                Execute(stmt.Body);
+            }
+            return null;
+        }
+
         public object VisitAssignExpr(Expr.AssignExpr expr)
         {
             var value = Evaluate(expr.Value);

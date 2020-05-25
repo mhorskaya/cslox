@@ -58,6 +58,11 @@ namespace Lox
             return Parenthesize2("var", stmt.Name, "=", stmt.Initializer);
         }
 
+        public string VisitWhileStmt(Stmt.WhileStmt stmt)
+        {
+            return Parenthesize2("while", stmt.Condition, stmt.Body);
+        }
+
         public string VisitAssignExpr(Expr.AssignExpr expr)
         {
             return Parenthesize2("=", expr.Name.Lexeme, expr.Value);
