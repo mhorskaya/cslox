@@ -14,6 +14,20 @@ namespace Lox
             return stmt.Accept(this);
         }
 
+        public string VisitBlockStmt(Stmt.BlockStmt stmt)
+        {
+            var builder = new StringBuilder();
+            builder.Append("(block ");
+
+            foreach (var statement in stmt.Statements)
+            {
+                builder.Append(statement.Accept(this));
+            }
+
+            builder.Append(")");
+            return builder.ToString();
+        }
+
         public string VisitExpressionStmt(Stmt.ExpressionStmt stmt)
         {
             return Parenthesize(";", stmt.Expression);

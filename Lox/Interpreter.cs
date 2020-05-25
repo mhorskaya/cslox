@@ -7,7 +7,7 @@ namespace Lox
 {
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-        private readonly Environment _environment = new Environment();
+        private Environment _environment = new Environment();
 
         public void Interpret(List<Stmt> statements)
         {
@@ -34,6 +34,25 @@ namespace Lox
             stmt.Accept(this);
         }
 
+        private void ExecuteBlock(List<Stmt> statements, Environment environment)
+        {
+            var previous = _environment;
+
+            try
+            {
+                _environment = environment;
+
+                foreach (var statement in statements)
+                {
+                    Execute(statement);
+                }
+            }
+            finally
+            {
+                _environment = previous;
+            }
+        }
+
         private static string Stringify(object obj)
         {
             switch (obj)
@@ -50,6 +69,12 @@ namespace Lox
                 default:
                     return obj.ToString();
             }
+        }
+
+        public object VisitBlockStmt(Stmt.BlockStmt stmt)
+        {
+            ExecuteBlock(stmt.Statements, new Environment(_environment));
+            return null;
         }
 
         public object VisitExpressionStmt(Stmt.ExpressionStmt stmt)

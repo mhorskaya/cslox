@@ -50,6 +50,7 @@ namespace Lox
         private Stmt Statement()
         {
             if (Match(PRINT)) return PrintStatement();
+            if (Match(LEFT_BRACE)) return new Stmt.BlockStmt(Block());
 
             return ExpressionStatement();
         }
@@ -80,6 +81,19 @@ namespace Lox
             var expr = Expression();
             Consume(SEMICOLON, "Expect ';' after expression.");
             return new Stmt.ExpressionStmt(expr);
+        }
+
+        private List<Stmt> Block()
+        {
+            var statements = new List<Stmt>();
+
+            while (!Check(RIGHT_BRACE) && !IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            Consume(RIGHT_BRACE, "Expect '}' after block.");
+            return statements;
         }
 
         private Expr Assignment()

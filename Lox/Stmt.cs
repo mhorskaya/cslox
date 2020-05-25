@@ -6,11 +6,28 @@ namespace Lox
     {
         public interface IVisitor<T>
         {
+            T VisitBlockStmt(BlockStmt stmt);
+
             T VisitExpressionStmt(ExpressionStmt stmt);
 
             T VisitPrintStmt(PrintStmt stmt);
 
             T VisitVarStmt(VarStmt stmt);
+        }
+
+        public class BlockStmt : Stmt
+        {
+            public BlockStmt(List<Stmt> statements)
+            {
+                Statements = statements;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitBlockStmt(this);
+            }
+
+            public List<Stmt> Statements { get; }
         }
 
         public class ExpressionStmt : Stmt

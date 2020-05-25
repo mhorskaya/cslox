@@ -28,6 +28,7 @@ namespace GenerateAst
 
             DefineAst(outputDir, "Stmt", new List<string>
             {
+                "BlockStmt      : List<Stmt> statements",
                 "ExpressionStmt : Expr expression",
                 "PrintStmt      : Expr expression",
                 "VarStmt        : Token name, Expr initializer"
