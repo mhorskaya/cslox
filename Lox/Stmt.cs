@@ -10,6 +10,8 @@ namespace Lox
 
             T VisitExpressionStmt(ExpressionStmt stmt);
 
+            T VisitIfStmt(IfStmt stmt);
+
             T VisitPrintStmt(PrintStmt stmt);
 
             T VisitVarStmt(VarStmt stmt);
@@ -43,6 +45,25 @@ namespace Lox
             }
 
             public Expr Expression { get; }
+        }
+
+        public class IfStmt : Stmt
+        {
+            public IfStmt(Expr condition, Stmt thenBranch, Stmt elseBranch)
+            {
+                Condition = condition;
+                ThenBranch = thenBranch;
+                ElseBranch = elseBranch;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitIfStmt(this);
+            }
+
+            public Expr Condition { get; }
+            public Stmt ThenBranch { get; }
+            public Stmt ElseBranch { get; }
         }
 
         public class PrintStmt : Stmt

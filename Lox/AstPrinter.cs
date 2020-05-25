@@ -33,6 +33,16 @@ namespace Lox
             return Parenthesize(";", stmt.Expression);
         }
 
+        public string VisitIfStmt(Stmt.IfStmt stmt)
+        {
+            if (stmt.ElseBranch == null)
+            {
+                return Parenthesize2("if", stmt.Condition, stmt.ThenBranch);
+            }
+
+            return Parenthesize2("if-else", stmt.Condition, stmt.ThenBranch, stmt.ElseBranch);
+        }
+
         public string VisitPrintStmt(Stmt.PrintStmt stmt)
         {
             return Parenthesize("print", stmt.Expression);

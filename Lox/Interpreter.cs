@@ -83,6 +83,19 @@ namespace Lox
             return null;
         }
 
+        public object VisitIfStmt(Stmt.IfStmt stmt)
+        {
+            if (IsTruthy(Evaluate(stmt.Condition)))
+            {
+                Execute(stmt.ThenBranch);
+            }
+            else if (stmt.ElseBranch != null)
+            {
+                Execute(stmt.ElseBranch);
+            }
+            return null;
+        }
+
         public object VisitPrintStmt(Stmt.PrintStmt stmt)
         {
             var value = Evaluate(stmt.Expression);
