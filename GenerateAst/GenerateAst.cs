@@ -22,6 +22,7 @@ namespace GenerateAst
                 "BinaryExpr   : Expr left, Token @operator, Expr right",
                 "GroupingExpr : Expr expression",
                 "LiteralExpr  : object value",
+                "LogicalExpr  : Expr left, Token @operator, Expr right",
                 "UnaryExpr    : Token @operator, Expr right",
                 "VariableExpr : Token name"
             });

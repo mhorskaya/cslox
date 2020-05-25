@@ -78,6 +78,11 @@ namespace Lox
             return expr.Value == null ? "nil" : expr.Value.ToString();
         }
 
+        public string VisitLogicalExpr(Expr.LogicalExpr expr)
+        {
+            return Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);
+        }
+
         public string VisitUnaryExpr(Expr.UnaryExpr expr)
         {
             return Parenthesize(expr.Operator.Lexeme, expr.Right);

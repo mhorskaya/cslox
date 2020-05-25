@@ -115,7 +115,7 @@ namespace Lox
 
         private Expr Assignment()
         {
-            var expr = Equality();
+            var expr = Or();
 
             if (Match(EQUAL))
             {
@@ -129,6 +129,34 @@ namespace Lox
                 }
 
                 Error(equals, "Invalid assignment target.");
+            }
+
+            return expr;
+        }
+
+        private Expr Or()
+        {
+            var expr = And();
+
+            while (Match(OR))
+            {
+                var @operator = Previous();
+                var right = And();
+                expr = new Expr.LogicalExpr(expr, @operator, right);
+            }
+
+            return expr;
+        }
+
+        private Expr And()
+        {
+            var expr = Equality();
+
+            while (Match(AND))
+            {
+                var @operator = Previous();
+                var right = Equality();
+                expr = new Expr.LogicalExpr(expr, @operator, right);
             }
 
             return expr;

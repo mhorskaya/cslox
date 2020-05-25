@@ -14,6 +14,8 @@ namespace Lox
 
             T VisitLiteralExpr(LiteralExpr expr);
 
+            T VisitLogicalExpr(LogicalExpr expr);
+
             T VisitUnaryExpr(UnaryExpr expr);
 
             T VisitVariableExpr(VariableExpr expr);
@@ -83,6 +85,25 @@ namespace Lox
             }
 
             public object Value { get; }
+        }
+
+        public class LogicalExpr : Expr
+        {
+            public LogicalExpr(Expr left, Token @operator, Expr right)
+            {
+                Left = left;
+                Operator = @operator;
+                Right = right;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitLogicalExpr(this);
+            }
+
+            public Expr Left { get; }
+            public Token Operator { get; }
+            public Expr Right { get; }
         }
 
         public class UnaryExpr : Expr

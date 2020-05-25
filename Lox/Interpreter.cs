@@ -187,6 +187,22 @@ namespace Lox
             return expr.Value;
         }
 
+        public object VisitLogicalExpr(Expr.LogicalExpr expr)
+        {
+            var left = Evaluate(expr.Left);
+
+            if (expr.Operator.Type == TokenType.OR)
+            {
+                if (IsTruthy(left)) return left;
+            }
+            else
+            {
+                if (!IsTruthy(left)) return left;
+            }
+
+            return Evaluate(expr.Right);
+        }
+
         public object VisitUnaryExpr(Expr.UnaryExpr expr)
         {
             var right = Evaluate(expr.Right);
