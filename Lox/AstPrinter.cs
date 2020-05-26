@@ -73,6 +73,11 @@ namespace Lox
             return Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);
         }
 
+        public string VisitCallExpr(Expr.CallExpr expr)
+        {
+            return Parenthesize2("call", expr.Callee, expr.Arguments);
+        }
+
         public string VisitGroupingExpr(Expr.GroupingExpr expr)
         {
             return Parenthesize("group", expr.Expression);

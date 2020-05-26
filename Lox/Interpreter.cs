@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using static Lox.TokenType;
 
 namespace Lox
@@ -184,6 +185,26 @@ namespace Lox
 
             // Unreachable.
             return null;
+        }
+
+        public object VisitCallExpr(Expr.CallExpr expr)
+        {
+            var callee = Evaluate(expr.Callee);
+            var arguments = expr.Arguments.Select(Evaluate).ToList();
+
+            if (!(callee is ILoxCallable))
+            {
+                throw new RuntimeError(expr.Paren, "Can only call functions and classes.");
+            }
+
+            var function = (ILoxCallable)callee;
+
+            if (arguments.Count != function.Arity())
+            {
+                throw new RuntimeError(expr.Paren, $"Expected {function.Arity()} arguments but got {arguments.Count}.");
+            }
+
+            return function.Call(this, arguments);
         }
 
         public object VisitGroupingExpr(Expr.GroupingExpr expr)

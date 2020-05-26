@@ -10,6 +10,8 @@ namespace Lox
 
             T VisitBinaryExpr(BinaryExpr expr);
 
+            T VisitCallExpr(CallExpr expr);
+
             T VisitGroupingExpr(GroupingExpr expr);
 
             T VisitLiteralExpr(LiteralExpr expr);
@@ -55,6 +57,25 @@ namespace Lox
             public Expr Left { get; }
             public Token Operator { get; }
             public Expr Right { get; }
+        }
+
+        public class CallExpr : Expr
+        {
+            public CallExpr(Expr callee, Token paren, List<Expr> arguments)
+            {
+                Callee = callee;
+                Paren = paren;
+                Arguments = arguments;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitCallExpr(this);
+            }
+
+            public Expr Callee { get; }
+            public Token Paren { get; }
+            public List<Expr> Arguments { get; }
         }
 
         public class GroupingExpr : Expr
