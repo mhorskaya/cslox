@@ -70,6 +70,12 @@ namespace Lox
             return Parenthesize("print", stmt.Expression);
         }
 
+        public string VisitReturnStmt(Stmt.ReturnStmt stmt)
+        {
+            if (stmt.Value == null) return "(return)";
+            return Parenthesize("return", stmt.Value);
+        }
+
         public string VisitVarStmt(Stmt.VarStmt stmt)
         {
             if (stmt.Initializer == null)

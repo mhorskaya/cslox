@@ -35,6 +35,7 @@ namespace GenerateAst
                 "FunctionStmt   : Token name, List<Token> @params, List<Stmt> body",
                 "IfStmt         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "PrintStmt      : Expr expression",
+                "ReturnStmt     : Token keyword, Expr value",
                 "VarStmt        : Token name, Expr initializer",
                 "WhileStmt      : Expr condition, Stmt body"
             });

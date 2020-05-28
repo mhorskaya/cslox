@@ -118,6 +118,14 @@ namespace Lox
             return null;
         }
 
+        public object VisitReturnStmt(Stmt.ReturnStmt stmt)
+        {
+            object value = null;
+            if (stmt.Value != null) value = Evaluate(stmt.Value);
+
+            throw new Return(value);
+        }
+
         public object VisitVarStmt(Stmt.VarStmt stmt)
         {
             object value = null;
