@@ -5,10 +5,12 @@ namespace Lox
     public class LoxFunction : ILoxCallable
     {
         private readonly Stmt.FunctionStmt _declaration;
+        private readonly Environment _closure;
 
-        public LoxFunction(Stmt.FunctionStmt declaration)
+        public LoxFunction(Stmt.FunctionStmt declaration, Environment closure)
         {
             _declaration = declaration;
+            _closure = closure;
         }
 
         public int Arity()
@@ -18,7 +20,7 @@ namespace Lox
 
         public object Call(Interpreter interpreter, List<object> arguments)
         {
-            var environment = new Environment(interpreter.Globals);
+            var environment = new Environment(_closure);
             for (var i = 0; i < _declaration.Params.Count; i++)
             {
                 environment.Define(_declaration.Params[i].Lexeme, arguments[i]);
