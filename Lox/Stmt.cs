@@ -10,6 +10,8 @@ namespace Lox
 
             T VisitExpressionStmt(ExpressionStmt stmt);
 
+            T VisitFunctionStmt(FunctionStmt stmt);
+
             T VisitIfStmt(IfStmt stmt);
 
             T VisitPrintStmt(PrintStmt stmt);
@@ -47,6 +49,25 @@ namespace Lox
             }
 
             public Expr Expression { get; }
+        }
+
+        public class FunctionStmt : Stmt
+        {
+            public FunctionStmt(Token name, List<Token> @params, List<Stmt> body)
+            {
+                Name = name;
+                Params = @params;
+                Body = body;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitFunctionStmt(this);
+            }
+
+            public Token Name { get; }
+            public List<Token> Params { get; }
+            public List<Stmt> Body { get; }
         }
 
         public class IfStmt : Stmt

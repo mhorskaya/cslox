@@ -33,6 +33,28 @@ namespace Lox
             return Parenthesize(";", stmt.Expression);
         }
 
+        public string VisitFunctionStmt(Stmt.FunctionStmt stmt)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"(fun {stmt.Name.Lexeme}(");
+
+            foreach (var param in stmt.Params)
+            {
+                if (param != stmt.Params[0]) builder.Append(" ");
+                builder.Append(param.Lexeme);
+            }
+
+            builder.Append(") ");
+
+            foreach (var body in stmt.Body)
+            {
+                builder.Append(body.Accept(this));
+            }
+
+            builder.Append(")");
+            return builder.ToString();
+        }
+
         public string VisitIfStmt(Stmt.IfStmt stmt)
         {
             if (stmt.ElseBranch == null)

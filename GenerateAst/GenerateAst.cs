@@ -32,6 +32,7 @@ namespace GenerateAst
             {
                 "BlockStmt      : List<Stmt> statements",
                 "ExpressionStmt : Expr expression",
+                "FunctionStmt   : Token name, List<Token> @params, List<Stmt> body",
                 "IfStmt         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "PrintStmt      : Expr expression",
                 "VarStmt        : Token name, Expr initializer",
@@ -126,15 +127,9 @@ namespace GenerateAst
 
         private static string ToUpper(string word)
         {
-            if (string.IsNullOrEmpty(word))
-            {
-                return string.Empty;
-            }
-
-            if (word == "@operator")
-            {
-                return "Operator";
-            }
+            if (string.IsNullOrEmpty(word)) return string.Empty;
+            if (word == "@operator") return "Operator";
+            if (word == "@params") return "Params";
 
             return char.ToUpper(word[0], CultureInfo.InvariantCulture) + word.Substring(1);
         }
