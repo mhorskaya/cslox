@@ -28,6 +28,20 @@ namespace Lox
             return builder.ToString();
         }
 
+        public string VisitClassStmt(Stmt.ClassStmt stmt)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"(class {stmt.Name.Lexeme}");
+
+            foreach (var method in stmt.Methods)
+            {
+                builder.Append($" {Print(method)}");
+            }
+
+            builder.Append(")");
+            return builder.ToString();
+        }
+
         public string VisitExpressionStmt(Stmt.ExpressionStmt stmt)
         {
             return Parenthesize(";", stmt.Expression);
@@ -106,6 +120,11 @@ namespace Lox
             return Parenthesize2("call", expr.Callee, expr.Arguments);
         }
 
+        public string VisitGetExpr(Expr.GetExpr expr)
+        {
+            return Parenthesize2(".", expr.Object, expr.Name.Lexeme);
+        }
+
         public string VisitGroupingExpr(Expr.GroupingExpr expr)
         {
             return Parenthesize("group", expr.Expression);
@@ -119,6 +138,11 @@ namespace Lox
         public string VisitLogicalExpr(Expr.LogicalExpr expr)
         {
             return Parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right);
+        }
+
+        public string VisitSetExpr(Expr.SetExpr expr)
+        {
+            return Parenthesize2("=", expr.Object, expr.Name.Lexeme, expr.Value);
         }
 
         public string VisitUnaryExpr(Expr.UnaryExpr expr)

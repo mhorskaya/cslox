@@ -12,11 +12,15 @@ namespace Lox
 
             T VisitCallExpr(CallExpr expr);
 
+            T VisitGetExpr(GetExpr expr);
+
             T VisitGroupingExpr(GroupingExpr expr);
 
             T VisitLiteralExpr(LiteralExpr expr);
 
             T VisitLogicalExpr(LogicalExpr expr);
+
+            T VisitSetExpr(SetExpr expr);
 
             T VisitUnaryExpr(UnaryExpr expr);
 
@@ -78,6 +82,23 @@ namespace Lox
             public List<Expr> Arguments { get; }
         }
 
+        public class GetExpr : Expr
+        {
+            public GetExpr(Expr @object, Token name)
+            {
+                Object = @object;
+                Name = name;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitGetExpr(this);
+            }
+
+            public Expr Object { get; }
+            public Token Name { get; }
+        }
+
         public class GroupingExpr : Expr
         {
             public GroupingExpr(Expr expression)
@@ -125,6 +146,25 @@ namespace Lox
             public Expr Left { get; }
             public Token Operator { get; }
             public Expr Right { get; }
+        }
+
+        public class SetExpr : Expr
+        {
+            public SetExpr(Expr @object, Token name, Expr value)
+            {
+                Object = @object;
+                Name = name;
+                Value = value;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitSetExpr(this);
+            }
+
+            public Expr Object { get; }
+            public Token Name { get; }
+            public Expr Value { get; }
         }
 
         public class UnaryExpr : Expr

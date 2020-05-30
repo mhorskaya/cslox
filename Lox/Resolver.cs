@@ -8,7 +8,8 @@ namespace Lox
         private enum FunctionType
         {
             NONE,
-            FUNCTION
+            FUNCTION,
+            METHOD
         }
 
         private readonly Interpreter _interpreter;
@@ -44,6 +45,12 @@ namespace Lox
             return null;
         }
 
+        public object VisitGetExpr(Expr.GetExpr expr)
+        {
+            Resolve(expr.Object);
+            return null;
+        }
+
         public object VisitGroupingExpr(Expr.GroupingExpr expr)
         {
             Resolve(expr.Expression);
@@ -59,6 +66,13 @@ namespace Lox
         {
             Resolve(expr.Left);
             Resolve(expr.Right);
+            return null;
+        }
+
+        public object VisitSetExpr(Expr.SetExpr expr)
+        {
+            Resolve(expr.Value);
+            Resolve(expr.Object);
             return null;
         }
 
@@ -83,6 +97,20 @@ namespace Lox
             BeginScope();
             Resolve(stmt.Statements);
             EndScope();
+            return null;
+        }
+
+        public object VisitClassStmt(Stmt.ClassStmt stmt)
+        {
+            Declare(stmt.Name);
+            Define(stmt.Name);
+
+            foreach (var method in stmt.Methods)
+            {
+                var declaration = FunctionType.METHOD;
+                ResolveFunction(method, declaration);
+            }
+
             return null;
         }
 

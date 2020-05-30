@@ -8,6 +8,8 @@ namespace Lox
         {
             T VisitBlockStmt(BlockStmt stmt);
 
+            T VisitClassStmt(ClassStmt stmt);
+
             T VisitExpressionStmt(ExpressionStmt stmt);
 
             T VisitFunctionStmt(FunctionStmt stmt);
@@ -36,6 +38,23 @@ namespace Lox
             }
 
             public List<Stmt> Statements { get; }
+        }
+
+        public class ClassStmt : Stmt
+        {
+            public ClassStmt(Token name, List<FunctionStmt> methods)
+            {
+                Name = name;
+                Methods = methods;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitClassStmt(this);
+            }
+
+            public Token Name { get; }
+            public List<FunctionStmt> Methods { get; }
         }
 
         public class ExpressionStmt : Stmt

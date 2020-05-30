@@ -21,9 +21,11 @@ namespace GenerateAst
                 "AssignExpr   : Token name, Expr value",
                 "BinaryExpr   : Expr left, Token @operator, Expr right",
                 "CallExpr     : Expr callee, Token paren, List<Expr> arguments",
+                "GetExpr      : Expr @object, Token name",
                 "GroupingExpr : Expr expression",
                 "LiteralExpr  : object value",
                 "LogicalExpr  : Expr left, Token @operator, Expr right",
+                "SetExpr      : Expr @object, Token name, Expr value",
                 "UnaryExpr    : Token @operator, Expr right",
                 "VariableExpr : Token name"
             });
@@ -31,6 +33,7 @@ namespace GenerateAst
             DefineAst(outputDir, "Stmt", new List<string>
             {
                 "BlockStmt      : List<Stmt> statements",
+                "ClassStmt      : Token name, List<FunctionStmt> methods",
                 "ExpressionStmt : Expr expression",
                 "FunctionStmt   : Token name, List<Token> @params, List<Stmt> body",
                 "IfStmt         : Expr condition, Stmt thenBranch, Stmt elseBranch",
@@ -131,6 +134,7 @@ namespace GenerateAst
             if (string.IsNullOrEmpty(word)) return string.Empty;
             if (word == "@operator") return "Operator";
             if (word == "@params") return "Params";
+            if (word == "@object") return "Object";
 
             return char.ToUpper(word[0], CultureInfo.InvariantCulture) + word.Substring(1);
         }

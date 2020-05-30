@@ -36,6 +36,7 @@ namespace Lox
         {
             try
             {
+                if (Match(CLASS)) return ClassDeclaration();
                 if (Match(FUN)) return Function("function");
                 if (Match(VAR)) return VarDeclaration();
 
@@ -46,6 +47,22 @@ namespace Lox
                 Synchronize();
                 return null;
             }
+        }
+
+        private Stmt ClassDeclaration()
+        {
+            var name = Consume(IDENTIFIER, "Expect class name.");
+            Consume(LEFT_BRACE, "Expect '{' before class body.");
+
+            var methods = new List<Stmt.FunctionStmt>();
+            while (!Check(RIGHT_BRACE) && !IsAtEnd())
+            {
+                methods.Add(Function("method"));
+            }
+
+            Consume(RIGHT_BRACE, "Expect '}' after class body.");
+
+            return new Stmt.ClassStmt(name, methods);
         }
 
         private Stmt Statement()
@@ -229,6 +246,10 @@ namespace Lox
                     var name = variableExpr.Name;
                     return new Expr.AssignExpr(name, value);
                 }
+                else if (expr is Expr.GetExpr getExpr)
+                {
+                    return new Expr.SetExpr(getExpr.Object, getExpr.Name, value);
+                }
 
                 Error(equals, "Invalid assignment target.");
             }
@@ -341,6 +362,11 @@ namespace Lox
                 if (Match(LEFT_PAREN))
                 {
                     expr = FinishCall(expr);
+                }
+                else if (Match(DOT))
+                {
+                    var name = Consume(IDENTIFIER, "Expect property name after '.'.");
+                    expr = new Expr.GetExpr(expr, name);
                 }
                 else
                 {

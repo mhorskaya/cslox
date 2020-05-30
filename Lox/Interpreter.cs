@@ -91,6 +91,22 @@ namespace Lox
             return null;
         }
 
+        public object VisitClassStmt(Stmt.ClassStmt stmt)
+        {
+            _environment.Define(stmt.Name.Lexeme, null);
+
+            var methods = new Dictionary<string, LoxFunction>();
+            foreach (var method in stmt.Methods)
+            {
+                var function = new LoxFunction(method, _environment);
+                methods[method.Name.Lexeme] = function;
+            }
+
+            var klass = new LoxClass(stmt.Name.Lexeme, methods);
+            _environment.Assign(stmt.Name, klass);
+            return null;
+        }
+
         public object VisitExpressionStmt(Stmt.ExpressionStmt stmt)
         {
             Evaluate(stmt.Expression);
@@ -244,6 +260,17 @@ namespace Lox
             return function.Call(this, arguments);
         }
 
+        public object VisitGetExpr(Expr.GetExpr expr)
+        {
+            var obj = Evaluate(expr.Object);
+            if (obj is LoxInstance instance)
+            {
+                return instance.Get(expr.Name);
+            }
+
+            throw new RuntimeError(expr.Name, "Only instances have properties.");
+        }
+
         public object VisitGroupingExpr(Expr.GroupingExpr expr)
         {
             return Evaluate(expr.Expression);
@@ -268,6 +295,20 @@ namespace Lox
             }
 
             return Evaluate(expr.Right);
+        }
+
+        public object VisitSetExpr(Expr.SetExpr expr)
+        {
+            var obj = Evaluate(expr.Object);
+
+            if (!(obj is LoxInstance))
+            {
+                throw new RuntimeError(expr.Name, "Only instances have fields.");
+            }
+
+            var value = Evaluate(expr.Value);
+            ((LoxInstance)obj).Set(expr.Name, value);
+            return value;
         }
 
         public object VisitUnaryExpr(Expr.UnaryExpr expr)
