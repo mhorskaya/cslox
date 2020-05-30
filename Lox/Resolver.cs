@@ -104,9 +104,13 @@ namespace Lox
 
         public object VisitVariableExpr(Expr.VariableExpr expr)
         {
-            if (_scopes.Any() && !_scopes.Peek()[expr.Name.Lexeme])
+            if (_scopes.Any())
             {
-                Lox.Error(expr.Name, "Cannot read local variable in its own initializer.");
+                var scope = _scopes.Peek();
+                if (scope.ContainsKey(expr.Name.Lexeme) && !scope[expr.Name.Lexeme])
+                {
+                    Lox.Error(expr.Name, "Cannot read local variable in its own initializer.");
+                }
             }
             ResolveLocal(expr, expr.Name);
             return null;
