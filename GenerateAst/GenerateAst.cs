@@ -34,7 +34,7 @@ namespace GenerateAst
             DefineAst(outputDir, "Stmt", new List<string>
             {
                 "BlockStmt      : List<Stmt> statements",
-                "ClassStmt      : Token name, List<FunctionStmt> methods",
+                "ClassStmt      : Token name, Expr.VariableExpr superclass, List<FunctionStmt> methods", 
                 "ExpressionStmt : Expr expression",
                 "FunctionStmt   : Token name, List<Token> @params, List<Stmt> body",
                 "IfStmt         : Expr condition, Stmt thenBranch, Stmt elseBranch",

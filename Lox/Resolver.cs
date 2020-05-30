@@ -132,6 +132,16 @@ namespace Lox
             Declare(stmt.Name);
             Define(stmt.Name);
 
+            if (stmt.Superclass != null && stmt.Name.Lexeme.Equals(stmt.Superclass.Name.Lexeme))
+            {
+                Lox.Error(stmt.Superclass.Name, "A class cannot inherit from itself.");
+            }
+
+            if (stmt.Superclass != null)
+            {
+                Resolve(stmt.Superclass);
+            }
+
             BeginScope();
             _scopes.Peek()["this"] = true;
 

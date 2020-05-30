@@ -93,6 +93,16 @@ namespace Lox
 
         public object VisitClassStmt(Stmt.ClassStmt stmt)
         {
+            object superclass = null;
+            if (stmt.Superclass != null)
+            {
+                superclass = Evaluate(stmt.Superclass);
+                if (!(superclass is LoxClass))
+                {
+                    throw new RuntimeError(stmt.Superclass.Name, "Superclass must be a class.");
+                }
+            }
+
             _environment.Define(stmt.Name.Lexeme, null);
 
             var methods = new Dictionary<string, LoxFunction>();
@@ -102,7 +112,7 @@ namespace Lox
                 methods[method.Name.Lexeme] = function;
             }
 
-            var klass = new LoxClass(stmt.Name.Lexeme, methods);
+            var klass = new LoxClass(stmt.Name.Lexeme, (LoxClass)superclass, methods);
             _environment.Assign(stmt.Name, klass);
             return null;
         }

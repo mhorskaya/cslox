@@ -33,6 +33,11 @@ namespace Lox
             var builder = new StringBuilder();
             builder.Append($"(class {stmt.Name.Lexeme}");
 
+            if (stmt.Superclass != null)
+            {
+                builder.Append($" < {Print(stmt.Superclass)}");
+            }
+
             foreach (var method in stmt.Methods)
             {
                 builder.Append($" {Print(method)}");

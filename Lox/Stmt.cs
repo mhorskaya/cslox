@@ -42,9 +42,10 @@ namespace Lox
 
         public class ClassStmt : Stmt
         {
-            public ClassStmt(Token name, List<FunctionStmt> methods)
+            public ClassStmt(Token name, Expr.VariableExpr superclass, List<FunctionStmt> methods)
             {
                 Name = name;
+                Superclass = superclass;
                 Methods = methods;
             }
 
@@ -54,6 +55,7 @@ namespace Lox
             }
 
             public Token Name { get; }
+            public Expr.VariableExpr Superclass { get; }
             public List<FunctionStmt> Methods { get; }
         }
 
