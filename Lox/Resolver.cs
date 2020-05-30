@@ -263,9 +263,10 @@ namespace Lox
         {
             for (var i = _scopes.Count - 1; i >= 0; i--)
             {
-                if (_scopes.ElementAt(i).ContainsKey(name.Lexeme))
+                var index = _scopes.Count - i - 1;
+                if (_scopes.ElementAt(index).ContainsKey(name.Lexeme))
                 {
-                    _interpreter.Resolve(expr, _scopes.Count - 1 - i);
+                    _interpreter.Resolve(expr, index);
                     return;
                 }
             }
