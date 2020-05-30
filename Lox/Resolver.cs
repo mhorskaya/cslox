@@ -9,12 +9,20 @@ namespace Lox
         {
             NONE,
             FUNCTION,
+            INITIALIZER,
             METHOD
+        }
+
+        private enum ClassType
+        {
+            NONE,
+            CLASS
         }
 
         private readonly Interpreter _interpreter;
         private readonly Stack<Dictionary<string, bool>> _scopes = new Stack<Dictionary<string, bool>>();
         private FunctionType _currentFunction = FunctionType.NONE;
+        private ClassType _currentClass = ClassType.NONE;
 
         public Resolver(Interpreter interpreter)
         {
@@ -76,6 +84,18 @@ namespace Lox
             return null;
         }
 
+        public object VisitThisExpr(Expr.ThisExpr expr)
+        {
+            if (_currentClass == ClassType.NONE)
+            {
+                Lox.Error(expr.Keyword, "Cannot use 'this' outside of a class.");
+                return null;
+            }
+
+            ResolveLocal(expr, expr.Keyword);
+            return null;
+        }
+
         public object VisitUnaryExpr(Expr.UnaryExpr expr)
         {
             Resolve(expr.Right);
@@ -102,15 +122,30 @@ namespace Lox
 
         public object VisitClassStmt(Stmt.ClassStmt stmt)
         {
+            var enclosingClass = _currentClass;
+            _currentClass = ClassType.CLASS;
+
             Declare(stmt.Name);
             Define(stmt.Name);
+
+            BeginScope();
+            _scopes.Peek()["this"] = true;
 
             foreach (var method in stmt.Methods)
             {
                 var declaration = FunctionType.METHOD;
+
+                if (method.Name.Lexeme.Equals("init"))
+                {
+                    declaration = FunctionType.INITIALIZER;
+                }
+
                 ResolveFunction(method, declaration);
             }
 
+            EndScope();
+
+            _currentClass = enclosingClass;
             return null;
         }
 
@@ -150,6 +185,10 @@ namespace Lox
             }
             if (stmt.Value != null)
             {
+                if (_currentFunction == FunctionType.INITIALIZER)
+                {
+                    Lox.Error(stmt.Keyword, "Cannot return a value from an initializer.");
+                }
                 Resolve(stmt.Value);
             }
             return null;

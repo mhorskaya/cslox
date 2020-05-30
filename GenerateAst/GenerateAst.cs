@@ -26,6 +26,7 @@ namespace GenerateAst
                 "LiteralExpr  : object value",
                 "LogicalExpr  : Expr left, Token @operator, Expr right",
                 "SetExpr      : Expr @object, Token name, Expr value",
+                "ThisExpr     : Token keyword",
                 "UnaryExpr    : Token @operator, Expr right",
                 "VariableExpr : Token name"
             });

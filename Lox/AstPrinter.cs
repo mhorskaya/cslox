@@ -145,6 +145,11 @@ namespace Lox
             return Parenthesize2("=", expr.Object, expr.Name.Lexeme, expr.Value);
         }
 
+        public string VisitThisExpr(Expr.ThisExpr expr)
+        {
+            return "this";
+        }
+
         public string VisitUnaryExpr(Expr.UnaryExpr expr)
         {
             return Parenthesize(expr.Operator.Lexeme, expr.Right);

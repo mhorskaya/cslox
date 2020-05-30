@@ -409,6 +409,8 @@ namespace Lox
                 return new Expr.LiteralExpr(Previous().Literal);
             }
 
+            if (Match(THIS)) return new Expr.ThisExpr(Previous());
+
             if (Match(IDENTIFIER))
             {
                 return new Expr.VariableExpr(Previous());

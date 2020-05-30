@@ -98,7 +98,7 @@ namespace Lox
             var methods = new Dictionary<string, LoxFunction>();
             foreach (var method in stmt.Methods)
             {
-                var function = new LoxFunction(method, _environment);
+                var function = new LoxFunction(method, _environment, method.Name.Lexeme.Equals("init"));
                 methods[method.Name.Lexeme] = function;
             }
 
@@ -115,7 +115,7 @@ namespace Lox
 
         public object VisitFunctionStmt(Stmt.FunctionStmt stmt)
         {
-            var function = new LoxFunction(stmt, _environment);
+            var function = new LoxFunction(stmt, _environment, false);
             _environment.Define(stmt.Name.Lexeme, function);
             return null;
         }
@@ -309,6 +309,11 @@ namespace Lox
             var value = Evaluate(expr.Value);
             ((LoxInstance)obj).Set(expr.Name, value);
             return value;
+        }
+
+        public object VisitThisExpr(Expr.ThisExpr expr)
+        {
+            return LookUpVariable(expr.Keyword, expr);
         }
 
         public object VisitUnaryExpr(Expr.UnaryExpr expr)
