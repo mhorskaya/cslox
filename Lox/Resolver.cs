@@ -247,19 +247,18 @@ namespace Lox
         private void Declare(Token name)
         {
             if (!_scopes.Any()) return;
-
-            _scopes.Peek()[name.Lexeme] = false;
-        }
-
-        private void Define(Token name)
-        {
-            if (!_scopes.Any()) return;
-
             var scope = _scopes.Peek();
             if (scope.ContainsKey(name.Lexeme))
             {
                 Lox.Error(name, "Variable with this name already declared in this scope.");
             }
+            scope[name.Lexeme] = false;
+        }
+
+        private void Define(Token name)
+        {
+            if (!_scopes.Any()) return;
+            var scope = _scopes.Peek();
             scope[name.Lexeme] = true;
         }
 
