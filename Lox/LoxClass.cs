@@ -17,7 +17,17 @@ namespace Lox
 
         public LoxFunction FindMethod(string name)
         {
-            return Methods.ContainsKey(name) ? Methods[name] : null;
+            if (Methods.ContainsKey(name))
+            {
+                return Methods[name];
+            }
+
+            if (Superclass != null)
+            {
+                return Superclass.FindMethod(name);
+            }
+
+            return null;
         }
 
         public int Arity()

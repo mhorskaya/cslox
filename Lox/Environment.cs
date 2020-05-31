@@ -4,18 +4,18 @@ namespace Lox
 {
     public class Environment
     {
-        private readonly Environment _enclosing;
+        public Environment Enclosing { get; }
 
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
 
         public Environment()
         {
-            _enclosing = null;
+            Enclosing = null;
         }
 
         public Environment(Environment enclosing)
         {
-            _enclosing = enclosing;
+            Enclosing = enclosing;
         }
 
         public object Get(Token name)
@@ -25,9 +25,9 @@ namespace Lox
                 return _values[name.Lexeme];
             }
 
-            if (_enclosing != null)
+            if (Enclosing != null)
             {
-                return _enclosing.Get(name);
+                return Enclosing.Get(name);
             }
 
             throw new RuntimeError(name, $"Undefined variable '{name.Lexeme}'.");
@@ -49,7 +49,7 @@ namespace Lox
 
             for (var i = 0; i < distance; i++)
             {
-                environment = environment._enclosing;
+                environment = environment.Enclosing;
             }
 
             return environment;
@@ -63,9 +63,9 @@ namespace Lox
                 return;
             }
 
-            if (_enclosing != null)
+            if (Enclosing != null)
             {
-                _enclosing.Assign(name, value);
+                Enclosing.Assign(name, value);
                 return;
             }
 

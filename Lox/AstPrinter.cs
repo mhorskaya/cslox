@@ -150,6 +150,11 @@ namespace Lox
             return Parenthesize2("=", expr.Object, expr.Name.Lexeme, expr.Value);
         }
 
+        public string VisitSuperExpr(Expr.SuperExpr expr)
+        {
+            return Parenthesize2("super", expr.Method);
+        }
+
         public string VisitThisExpr(Expr.ThisExpr expr)
         {
             return "this";

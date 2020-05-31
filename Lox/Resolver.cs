@@ -16,7 +16,8 @@ namespace Lox
         private enum ClassType
         {
             NONE,
-            CLASS
+            CLASS,
+            SUBCLASS
         }
 
         private readonly Interpreter _interpreter;
@@ -84,6 +85,21 @@ namespace Lox
             return null;
         }
 
+        public object VisitSuperExpr(Expr.SuperExpr expr)
+        {
+            if (_currentClass == ClassType.NONE)
+            {
+                Lox.Error(expr.Keyword, "Cannot use 'super' outside of a class.");
+            }
+            else if (_currentClass != ClassType.SUBCLASS)
+            {
+                Lox.Error(expr.Keyword, "Cannot use 'super' in a class with no superclass.");
+            }
+
+            ResolveLocal(expr, expr.Keyword);
+            return null;
+        }
+
         public object VisitThisExpr(Expr.ThisExpr expr)
         {
             if (_currentClass == ClassType.NONE)
@@ -139,7 +155,14 @@ namespace Lox
 
             if (stmt.Superclass != null)
             {
+                _currentClass = ClassType.SUBCLASS;
                 Resolve(stmt.Superclass);
+            }
+
+            if (stmt.Superclass != null)
+            {
+                BeginScope();
+                _scopes.Peek()["super"] = true;
             }
 
             BeginScope();
@@ -158,6 +181,8 @@ namespace Lox
             }
 
             EndScope();
+
+            if (stmt.Superclass != null) EndScope();
 
             _currentClass = enclosingClass;
             return null;

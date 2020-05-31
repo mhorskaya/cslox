@@ -22,6 +22,8 @@ namespace Lox
 
             T VisitSetExpr(SetExpr expr);
 
+            T VisitSuperExpr(SuperExpr expr);
+
             T VisitThisExpr(ThisExpr expr);
 
             T VisitUnaryExpr(UnaryExpr expr);
@@ -167,6 +169,23 @@ namespace Lox
             public Expr Object { get; }
             public Token Name { get; }
             public Expr Value { get; }
+        }
+
+        public class SuperExpr : Expr
+        {
+            public SuperExpr(Token keyword, Token method)
+            {
+                Keyword = keyword;
+                Method = method;
+            }
+
+            public override T Accept<T>(IVisitor<T> visitor)
+            {
+               return visitor.VisitSuperExpr(this);
+            }
+
+            public Token Keyword { get; }
+            public Token Method { get; }
         }
 
         public class ThisExpr : Expr

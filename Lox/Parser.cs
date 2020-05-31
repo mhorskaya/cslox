@@ -417,6 +417,14 @@ namespace Lox
                 return new Expr.LiteralExpr(Previous().Literal);
             }
 
+            if (Match(SUPER))
+            {
+                var keyword = Previous();
+                Consume(DOT, "Expect '.' after 'super'.");
+                var method = Consume(IDENTIFIER, "Expect superclass method name.");
+                return new Expr.SuperExpr(keyword, method);
+            }
+
             if (Match(THIS)) return new Expr.ThisExpr(Previous());
 
             if (Match(IDENTIFIER))
