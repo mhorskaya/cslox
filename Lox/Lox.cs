@@ -6,9 +6,9 @@ namespace Lox
 {
     public class Lox
     {
-        private static readonly Interpreter Interpreter = new Interpreter();
-        private static bool _hadError;
-        private static bool _hadRuntimeError;
+        public static Interpreter Interpreter { get; } = new Interpreter();
+        public static bool HadError { get; private set; }
+        public static bool HadRuntimeError { get; private set; }
 
         private static void Main(string[] args)
         {
@@ -30,16 +30,8 @@ namespace Lox
         private static void RunFile(string path)
         {
             Run(File.ReadAllText(path));
-
-            if (_hadError)
-            {
-                System.Environment.Exit(65);
-            }
-
-            if (_hadRuntimeError)
-            {
-                System.Environment.Exit(70);
-            }
+            if (HadError) System.Environment.Exit(65);
+            if (HadRuntimeError) System.Environment.Exit(70);
         }
 
         private static void RunPrompt()
@@ -48,23 +40,20 @@ namespace Lox
             {
                 Console.Write("> ");
                 Run(Console.ReadLine());
-                _hadError = false;
+                HadError = false;
             }
         }
 
         private static void Run(string source)
         {
-            var scanner = new Scanner(source);
-            var tokens = scanner.ScanTokens();
-            var parser = new Parser(tokens);
-            var statements = parser.Parse();
+            var tokens = new Scanner(source).ScanTokens();
+            var statements = new Parser(tokens).Parse();
 
-            if (_hadError) return;
+            if (HadError) return;
 
-            var resolver = new Resolver(Interpreter);
-            resolver.Resolve(statements);
+            new Resolver(Interpreter).Resolve(statements);
 
-            if (_hadError) return;
+            if (HadError) return;
 
             Interpreter.Interpret(statements);
         }
@@ -76,26 +65,19 @@ namespace Lox
 
         public static void Error(Token token, string message)
         {
-            if (token.Type == TokenType.EOF)
-            {
-                Report(token.Line, " at end", message);
-            }
-            else
-            {
-                Report(token.Line, $" at '{token.Lexeme}'", message);
-            }
+            Report(token.Line, token.Type == TokenType.EOF ? " at end" : $" at '{token.Lexeme}'", message);
         }
 
         public static void RuntimeError(RuntimeError error)
         {
             Console.Error.WriteLine($"{error.Message}\n[line {error.Token.Line}]");
-            _hadRuntimeError = true;
+            HadRuntimeError = true;
         }
 
         private static void Report(int line, string where, string message)
         {
             Console.Error.WriteLine($"[Line {line}] Error{where}: {message}");
-            _hadError = true;
+            HadError = true;
         }
 
         private static void PrintAst(List<Stmt> statements)

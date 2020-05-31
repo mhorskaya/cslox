@@ -17,36 +17,18 @@ namespace Lox
 
         public LoxFunction FindMethod(string name)
         {
-            if (Methods.ContainsKey(name))
-            {
-                return Methods[name];
-            }
-
-            if (Superclass != null)
-            {
-                return Superclass.FindMethod(name);
-            }
-
-            return null;
+            return Methods.ContainsKey(name) ? Methods[name] : Superclass?.FindMethod(name);
         }
 
         public int Arity()
         {
-            var initializer = FindMethod("init");
-            if (initializer == null) return 0;
-            return initializer.Arity();
+            return FindMethod("init")?.Arity() ?? 0;
         }
 
         public object Call(Interpreter interpreter, List<object> arguments)
         {
             var instance = new LoxInstance(this);
-
-            var initializer = FindMethod("init");
-            if (initializer != null)
-            {
-                initializer.Bind(instance).Call(interpreter, arguments);
-            }
-
+            FindMethod("init")?.Bind(instance).Call(interpreter, arguments);
             return instance;
         }
 

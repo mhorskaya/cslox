@@ -6,7 +6,7 @@ namespace Lox
     {
         public Environment Enclosing { get; }
 
-        private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
+        public Dictionary<string, object> Values { get; } = new Dictionary<string, object>();
 
         public Environment()
         {
@@ -20,27 +20,23 @@ namespace Lox
 
         public object Get(Token name)
         {
-            if (_values.ContainsKey(name.Lexeme))
-            {
-                return _values[name.Lexeme];
-            }
+            if (Values.ContainsKey(name.Lexeme))
+                return Values[name.Lexeme];
 
             if (Enclosing != null)
-            {
                 return Enclosing.Get(name);
-            }
 
             throw new RuntimeError(name, $"Undefined variable '{name.Lexeme}'.");
         }
 
         public object GetAt(int distance, string name)
         {
-            return Ancestor(distance)._values[name];
+            return Ancestor(distance).Values[name];
         }
 
         public void Define(string name, object value)
         {
-            _values.Add(name, value);
+            Values.Add(name, value);
         }
 
         private Environment Ancestor(int distance)
@@ -48,18 +44,16 @@ namespace Lox
             var environment = this;
 
             for (var i = 0; i < distance; i++)
-            {
                 environment = environment.Enclosing;
-            }
 
             return environment;
         }
 
         public void Assign(Token name, object value)
         {
-            if (_values.ContainsKey(name.Lexeme))
+            if (Values.ContainsKey(name.Lexeme))
             {
-                _values[name.Lexeme] = value;
+                Values[name.Lexeme] = value;
                 return;
             }
 
@@ -74,7 +68,7 @@ namespace Lox
 
         public void AssignAt(int distance, Token name, object value)
         {
-            Ancestor(distance)._values[name.Lexeme] = value;
+            Ancestor(distance).Values[name.Lexeme] = value;
         }
     }
 }

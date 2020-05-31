@@ -20,14 +20,14 @@ namespace Lox
             SUBCLASS
         }
 
-        private readonly Interpreter _interpreter;
-        private readonly Stack<Dictionary<string, bool>> _scopes = new Stack<Dictionary<string, bool>>();
+        public Interpreter Interpreter { get; }
+        public Stack<Dictionary<string, bool>> Scopes { get; } = new Stack<Dictionary<string, bool>>();
         private FunctionType _currentFunction = FunctionType.NONE;
         private ClassType _currentClass = ClassType.NONE;
 
         public Resolver(Interpreter interpreter)
         {
-            _interpreter = interpreter;
+            Interpreter = interpreter;
         }
 
         public object VisitAssignExpr(Expr.AssignExpr expr)
@@ -47,10 +47,8 @@ namespace Lox
         public object VisitCallExpr(Expr.CallExpr expr)
         {
             Resolve(expr.Callee);
-            foreach (var argument in expr.Arguments)
-            {
+            foreach (var argument in expr.Arguments) 
                 Resolve(argument);
-            }
             return null;
         }
 
@@ -88,13 +86,9 @@ namespace Lox
         public object VisitSuperExpr(Expr.SuperExpr expr)
         {
             if (_currentClass == ClassType.NONE)
-            {
                 Lox.Error(expr.Keyword, "Cannot use 'super' outside of a class.");
-            }
             else if (_currentClass != ClassType.SUBCLASS)
-            {
                 Lox.Error(expr.Keyword, "Cannot use 'super' in a class with no superclass.");
-            }
 
             ResolveLocal(expr, expr.Keyword);
             return null;
@@ -120,13 +114,11 @@ namespace Lox
 
         public object VisitVariableExpr(Expr.VariableExpr expr)
         {
-            if (_scopes.Any())
+            if (Scopes.Any())
             {
-                var scope = _scopes.Peek();
+                var scope = Scopes.Peek();
                 if (scope.ContainsKey(expr.Name.Lexeme) && !scope[expr.Name.Lexeme])
-                {
                     Lox.Error(expr.Name, "Cannot read local variable in its own initializer.");
-                }
             }
             ResolveLocal(expr, expr.Name);
             return null;
@@ -149,9 +141,7 @@ namespace Lox
             Define(stmt.Name);
 
             if (stmt.Superclass != null && stmt.Name.Lexeme.Equals(stmt.Superclass.Name.Lexeme))
-            {
                 Lox.Error(stmt.Superclass.Name, "A class cannot inherit from itself.");
-            }
 
             if (stmt.Superclass != null)
             {
@@ -162,27 +152,25 @@ namespace Lox
             if (stmt.Superclass != null)
             {
                 BeginScope();
-                _scopes.Peek()["super"] = true;
+                Scopes.Peek()["super"] = true;
             }
 
             BeginScope();
-            _scopes.Peek()["this"] = true;
+            Scopes.Peek()["this"] = true;
 
             foreach (var method in stmt.Methods)
             {
                 var declaration = FunctionType.METHOD;
-
-                if (method.Name.Lexeme.Equals("init"))
-                {
+                if (method.Name.Lexeme.Equals("init")) 
                     declaration = FunctionType.INITIALIZER;
-                }
 
                 ResolveFunction(method, declaration);
             }
 
             EndScope();
 
-            if (stmt.Superclass != null) EndScope();
+            if (stmt.Superclass != null)
+                EndScope();
 
             _currentClass = enclosingClass;
             return null;
@@ -225,9 +213,8 @@ namespace Lox
             if (stmt.Value != null)
             {
                 if (_currentFunction == FunctionType.INITIALIZER)
-                {
                     Lox.Error(stmt.Keyword, "Cannot return a value from an initializer.");
-                }
+
                 Resolve(stmt.Value);
             }
             return null;
@@ -236,10 +223,7 @@ namespace Lox
         public object VisitVarStmt(Stmt.VarStmt stmt)
         {
             Declare(stmt.Name);
-            if (stmt.Initializer != null)
-            {
-                Resolve(stmt.Initializer);
-            }
+            if (stmt.Initializer != null) Resolve(stmt.Initializer);
             Define(stmt.Name);
             return null;
         }
@@ -253,10 +237,8 @@ namespace Lox
 
         public void Resolve(List<Stmt> statements)
         {
-            foreach (var statement in statements)
-            {
+            foreach (var statement in statements) 
                 Resolve(statement);
-            }
         }
 
         private void Resolve(Stmt stmt)
@@ -271,45 +253,41 @@ namespace Lox
 
         private void BeginScope()
         {
-            _scopes.Push(new Dictionary<string, bool>());
+            Scopes.Push(new Dictionary<string, bool>());
         }
 
         private void EndScope()
         {
-            _scopes.Pop();
+            Scopes.Pop();
         }
 
         private void Declare(Token name)
         {
-            if (!_scopes.Any()) return;
-            var scope = _scopes.Peek();
+            if (!Scopes.Any()) return;
+            var scope = Scopes.Peek();
             if (scope.ContainsKey(name.Lexeme))
-            {
                 Lox.Error(name, "Variable with this name already declared in this scope.");
-            }
             scope[name.Lexeme] = false;
         }
 
         private void Define(Token name)
         {
-            if (!_scopes.Any()) return;
-            var scope = _scopes.Peek();
+            if (!Scopes.Any()) return;
+            var scope = Scopes.Peek();
             scope[name.Lexeme] = true;
         }
 
         private void ResolveLocal(Expr expr, Token name)
         {
-            for (var i = _scopes.Count - 1; i >= 0; i--)
+            for (var i = Scopes.Count - 1; i >= 0; i--)
             {
-                var index = _scopes.Count - i - 1;
-                if (_scopes.ElementAt(index).ContainsKey(name.Lexeme))
+                var index = Scopes.Count - i - 1;
+                if (Scopes.ElementAt(index).ContainsKey(name.Lexeme))
                 {
-                    _interpreter.Resolve(expr, index);
+                    Interpreter.Resolve(expr, index);
                     return;
                 }
             }
-
-            // Not found. Assume it is global.
         }
 
         private void ResolveFunction(Stmt.FunctionStmt function, FunctionType type)

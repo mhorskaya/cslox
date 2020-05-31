@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using static Lox.TokenType;
 
 namespace Lox
@@ -8,21 +9,19 @@ namespace Lox
     {
         private class ParseError : SystemException { }
 
-        private readonly List<Token> _tokens;
-        private int _current;
+        public List<Token> Tokens { get; }
+        public int Current { get; private set; }
 
         public Parser(List<Token> tokens)
         {
-            _tokens = tokens;
+            Tokens = tokens;
         }
 
         public List<Stmt> Parse()
         {
             var statements = new List<Stmt>();
             while (!IsAtEnd())
-            {
                 statements.Add(Declaration());
-            }
 
             return statements;
         }
@@ -64,9 +63,7 @@ namespace Lox
 
             var methods = new List<Stmt.FunctionStmt>();
             while (!Check(RIGHT_BRACE) && !IsAtEnd())
-            {
                 methods.Add(Function("method"));
-            }
 
             Consume(RIGHT_BRACE, "Expect '}' after class body.");
 
@@ -91,45 +88,29 @@ namespace Lox
 
             Stmt initializer;
             if (Match(SEMICOLON))
-            {
                 initializer = null;
-            }
             else if (Match(VAR))
-            {
                 initializer = VarDeclaration();
-            }
             else
-            {
                 initializer = ExpressionStatement();
-            }
 
             Expr condition = null;
-            if (!Check(SEMICOLON))
-            {
-                condition = Expression();
-            }
+            if (!Check(SEMICOLON)) condition = Expression();
             Consume(SEMICOLON, "Expect ';' after loop condition.");
 
             Expr increment = null;
-            if (!Check(RIGHT_PAREN))
-            {
-                increment = Expression();
-            }
+            if (!Check(RIGHT_PAREN)) increment = Expression();
             Consume(RIGHT_PAREN, "Expect ')' after for clauses.");
 
             var body = Statement();
             if (increment != null)
-            {
                 body = new Stmt.BlockStmt(new List<Stmt> { body, new Stmt.ExpressionStmt(increment) });
-            }
 
             condition ??= new Expr.LiteralExpr(true);
             body = new Stmt.WhileStmt(condition, body);
 
             if (initializer != null)
-            {
                 body = new Stmt.BlockStmt(new List<Stmt> { initializer, body });
-            }
 
             return body;
         }
@@ -142,10 +123,7 @@ namespace Lox
 
             var thenBranch = Statement();
             Stmt elseBranch = null;
-            if (Match(ELSE))
-            {
-                elseBranch = Statement();
-            }
+            if (Match(ELSE)) elseBranch = Statement();
 
             return new Stmt.IfStmt(condition, thenBranch, elseBranch);
         }
@@ -161,10 +139,7 @@ namespace Lox
         {
             var keyword = Previous();
             Expr value = null;
-            if (!Check(SEMICOLON))
-            {
-                value = Expression();
-            }
+            if (!Check(SEMICOLON)) value = Expression();
 
             Consume(SEMICOLON, "Expect ';' after return value.");
             return new Stmt.ReturnStmt(keyword, value);
@@ -191,9 +166,7 @@ namespace Lox
                 do
                 {
                     if (parameters.Count >= 255)
-                    {
                         Error(Peek(), "Cannot have more than 255 parameters.");
-                    }
 
                     parameters.Add(Consume(IDENTIFIER, "Expect parameter name."));
                 } while (Match(COMMA));
@@ -211,10 +184,7 @@ namespace Lox
             var name = Consume(IDENTIFIER, "Expect variable name.");
 
             Expr initializer = null;
-            if (Match(EQUAL))
-            {
-                initializer = Expression();
-            }
+            if (Match(EQUAL)) initializer = Expression();
 
             Consume(SEMICOLON, "Expect ';' after variable declaration.");
             return new Stmt.VarStmt(name, initializer);
@@ -230,11 +200,8 @@ namespace Lox
         private List<Stmt> Block()
         {
             var statements = new List<Stmt>();
-
             while (!Check(RIGHT_BRACE) && !IsAtEnd())
-            {
                 statements.Add(Declaration());
-            }
 
             Consume(RIGHT_BRACE, "Expect '}' after block.");
             return statements;
@@ -249,17 +216,18 @@ namespace Lox
                 var equals = Previous();
                 var value = Assignment();
 
-                if (expr is Expr.VariableExpr variableExpr)
+                switch (expr)
                 {
-                    var name = variableExpr.Name;
-                    return new Expr.AssignExpr(name, value);
-                }
-                else if (expr is Expr.GetExpr getExpr)
-                {
-                    return new Expr.SetExpr(getExpr.Object, getExpr.Name, value);
-                }
+                    case Expr.VariableExpr variableExpr:
+                        return new Expr.AssignExpr(variableExpr.Name, value);
 
-                Error(equals, "Invalid assignment target.");
+                    case Expr.GetExpr getExpr:
+                        return new Expr.SetExpr(getExpr.Object, getExpr.Name, value);
+
+                    default:
+                        Error(equals, "Invalid assignment target.");
+                        break;
+                }
             }
 
             return expr;
@@ -394,9 +362,7 @@ namespace Lox
                 do
                 {
                     if (arguments.Count >= 255)
-                    {
                         Error(Peek(), "Cannot have more than 255 arguments.");
-                    }
                     arguments.Add(Expression());
                 } while (Match(COMMA));
             }
@@ -411,11 +377,7 @@ namespace Lox
             if (Match(FALSE)) return new Expr.LiteralExpr(false);
             if (Match(TRUE)) return new Expr.LiteralExpr(true);
             if (Match(NIL)) return new Expr.LiteralExpr(null);
-
-            if (Match(NUMBER, STRING))
-            {
-                return new Expr.LiteralExpr(Previous().Literal);
-            }
+            if (Match(NUMBER, STRING)) return new Expr.LiteralExpr(Previous().Literal);
 
             if (Match(SUPER))
             {
@@ -426,11 +388,7 @@ namespace Lox
             }
 
             if (Match(THIS)) return new Expr.ThisExpr(Previous());
-
-            if (Match(IDENTIFIER))
-            {
-                return new Expr.VariableExpr(Previous());
-            }
+            if (Match(IDENTIFIER)) return new Expr.VariableExpr(Previous());
 
             if (Match(LEFT_PAREN))
             {
@@ -444,35 +402,33 @@ namespace Lox
 
         private bool Match(params TokenType[] types)
         {
-            foreach (var type in types)
-            {
-                if (Check(type))
-                {
-                    Advance();
-                    return true;
-                }
-            }
+            if (!types.Any(Check))
+                return false;
 
-            return false;
+            Advance();
+            return true;
         }
 
         private Token Consume(TokenType type, string message)
         {
-            if (Check(type)) return Advance();
+            if (Check(type))
+                return Advance();
 
             throw Error(Peek(), message);
         }
 
         private bool Check(TokenType type)
         {
-            if (IsAtEnd()) return false;
+            if (IsAtEnd())
+                return false;
 
             return Peek().Type == type;
         }
 
         private Token Advance()
         {
-            if (!IsAtEnd()) _current++;
+            if (!IsAtEnd())
+                Current++;
 
             return Previous();
         }
@@ -484,12 +440,12 @@ namespace Lox
 
         private Token Peek()
         {
-            return _tokens[_current];
+            return Tokens[Current];
         }
 
         private Token Previous()
         {
-            return _tokens[_current - 1];
+            return Tokens[Current - 1];
         }
 
         private ParseError Error(Token token, string message)

@@ -4,22 +4,20 @@ namespace Lox
 {
     public class LoxInstance
     {
-        private LoxClass klass;
-        private readonly Dictionary<string, object> fields = new Dictionary<string, object>();
+        public LoxClass Klass { get; }
+        public Dictionary<string, object> Fields { get; } = new Dictionary<string, object>();
 
         public LoxInstance(LoxClass klass)
         {
-            this.klass = klass;
+            Klass = klass;
         }
 
         public object Get(Token name)
         {
-            if (fields.ContainsKey(name.Lexeme))
-            {
-                return fields[name.Lexeme];
-            }
+            if (Fields.ContainsKey(name.Lexeme))
+                return Fields[name.Lexeme];
 
-            var method = klass.FindMethod(name.Lexeme);
+            var method = Klass.FindMethod(name.Lexeme);
             if (method != null) return method.Bind(this);
 
             throw new RuntimeError(name, $"Undefined property '{name.Lexeme}'.");
@@ -27,12 +25,12 @@ namespace Lox
 
         public void Set(Token name, object value)
         {
-            fields[name.Lexeme] = value;
+            Fields[name.Lexeme] = value;
         }
 
         public override string ToString()
         {
-            return klass.Name + " instance";
+            return $"{Klass.Name} instance";
         }
     }
 }
